@@ -134,4 +134,4 @@ exports.updateUserInfo = async (req, res) => {
     console.error("Error updating user information:", error);
     res.status(500).json({ error: "An error occurred while updating user information." });
   }
-};
+}
