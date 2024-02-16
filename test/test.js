@@ -6,15 +6,15 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('User Integration Tests', () => {
-  const userEmail = 'lkeh@example.com';
-  const password = 'Passwrd123!';
+  const userEmail = 'john@example.com';
+  const password = 'Passrd123!';
   const authHeader = 'Basic ' + Buffer.from(`${userEmail}:${password}`).toString('base64');
 
   it('Test 1: Create an account and validate account exists', (done) => {
     // Create user
     chai.request(app)
       .post('/v1/user')
-      .send({ email: userEmail, password, firstName: 'Lkesh', lastName: 'Kanna' })
+      .send({ email: userEmail, password, firstName: 'Lesh', lastName: 'Knna' })
       .end((err, res) => {
         expect(res).to.have.status(201);
 
@@ -29,8 +29,8 @@ describe('User Integration Tests', () => {
             expect(res).to.have.status(200);
             expect(res.body.user).to.include({
               email: userEmail,
-              firstName: 'Lokesh',
-              lastName: 'Kanna'
+              firstName: 'Lesh',
+              lastName: 'Knna'
             });
             done();
           });
@@ -42,7 +42,7 @@ describe('User Integration Tests', () => {
     chai.request(app)
       .put('/v1/user/self')
       .set('Authorization', authHeader)
-      .send({ firstName: 'Updated', lastName: 'Kanna' })
+      .send({ firstName: 'Updated', lastName: 'Knna' })
       .end((err, res) => {
         expect(res).to.have.status(200);
 
@@ -55,7 +55,7 @@ describe('User Integration Tests', () => {
             expect(res.body.user).to.include({
               email: userEmail,
               firstName: 'Updated',
-              lastName: 'Kanna'
+              lastName: 'Knna'
             });
             done();
           });
