@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../app'); // Adjust the path to your Express app
 const expect = chai.expect;
-const { sequelize } = require('./models/userModel');
+const { sequelize } = require('../models/userModel');
 
 chai.use(chaiHttp);
 
@@ -24,7 +24,7 @@ async function bootstrapDatabase() {
 bootstrapDatabase();
 
 describe('User Integration Tests', () => {
-  const userEmail = 'john111@example.com';
+  const userEmail = 'john15@example.com';
   const password = 'Passrd123!';
   const authHeader = 'Basic ' + Buffer.from(`${userEmail}:${password}`).toString('base64');
 
@@ -44,7 +44,7 @@ describe('User Integration Tests', () => {
           .get('/v1/user/self')
           .set('Authorization', createdUserAuthHeader)
           .end((err, res) => {
-            expect(res).to.have.status(500);
+            expect(res).to.have.status(200);
             expect(res.body.user).to.include({
               email: userEmail,
               firstName: 'Lesh',
