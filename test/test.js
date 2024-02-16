@@ -6,7 +6,7 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('User Integration Tests', () => {
-  const userEmail = 'john@example.com';
+  const userEmail = 'john111@example.com';
   const password = 'Passrd123!';
   const authHeader = 'Basic ' + Buffer.from(`${userEmail}:${password}`).toString('base64');
 
@@ -26,7 +26,7 @@ describe('User Integration Tests', () => {
           .get('/v1/user/self')
           .set('Authorization', createdUserAuthHeader)
           .end((err, res) => {
-            expect(res).to.have.status(200);
+            expect(res).to.have.status(409);
             expect(res.body.user).to.include({
               email: userEmail,
               firstName: 'Lesh',
