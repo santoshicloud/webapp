@@ -1,0 +1,39 @@
+name: Integration 
+
+env:
+  DB_HOST: ${{ secrets.HOST }}
+  DB_USER: ${{ secrets.USERNAME }}
+  DB_PASSWORD: ${{ secrets.PASSWORD }}
+  DB_DATABASE: ${{ secrets.DATABASE }}
+  DB_PORT: ${{ secrets.PORT }}
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DATABASE }};"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npm test
