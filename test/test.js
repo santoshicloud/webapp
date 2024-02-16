@@ -2,8 +2,26 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../app'); // Adjust the path to your Express app
 const expect = chai.expect;
+const { sequelize } = require('./models/userModel');
 
 chai.use(chaiHttp);
+
+async function bootstrapDatabase() {
+  try {
+    await sequelize.authenticate(); // Test database connection
+    console.log('Connection to the database has been established successfully.');
+
+    // Synchronize database models with database schema
+    await sequelize.sync({ alter: true }); // This will automatically create tables if they don't exist
+    console.log('Database synchronized.');
+
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+    process.exit(1); // Exit the application if unable to connect to the database
+  }
+}
+
+bootstrapDatabase();
 
 describe('User Integration Tests', () => {
   const userEmail = 'john111@example.com';
