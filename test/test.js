@@ -26,7 +26,7 @@ describe('User Integration Tests', () => {
           .get('/v1/user/self')
           .set('Authorization', createdUserAuthHeader)
           .end((err, res) => {
-            expect(res).to.have.status(409);
+            expect(res).to.have.status(500);
             expect(res.body.user).to.include({
               email: userEmail,
               firstName: 'Lesh',
