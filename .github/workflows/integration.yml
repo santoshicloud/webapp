@@ -1,53 +1,44 @@
 name: Integration
-
 env:
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USERNAME: ${{ secrets.DB_USERNAME }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_NAME: ${{ secrets.DB_NAME }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-
+  DB_HOST: ${{ secrets.HOST }}
+  DB_USER: ${{ secrets.USERNAME }}
+  DB_PASSWORD: ${{ secrets.PASSWORD }}
+  DB_DATABASE: ${{ secrets.DATABASE }}
+  DB_PORT: ${{ secrets.PORT }}
+ 
 on:
   pull_request:
     branches:
       - main
-
+ 
 jobs:
   integration-test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres
-        ports:
-          - ${{ secrets.DB_PORT }}:5432
-        env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
+ 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
+ 
+      - name: Install PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DATABASE }};"
+          sudo -u postgres psql -c "CREATE USER ${{ secrets.USERNAME }} WITH PASSWORD '${{ secrets.PASSWORD }}'; GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DATABASE }} TO ${{ secrets.USERNAME }};"
+ 
+ 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: "14.x"
-
-      - name: Install PostgreSQL Client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
+ 
+      - name: Print Working Directory
+        run: pwd
+ 
       - name: Install Dependencies
         run: npm install
-
-      - name: Wait for PostgreSQL
-        run: |
-          for i in $(seq 1 30); do
-            nc -z localhost ${{ secrets.DB_PORT }} && echo "PostgreSQL is ready" && break
-            echo "Waiting for PostgreSQL to start..."
-            sleep 5
-          done
-
+ 
       - name: Run Tests
         run: npm test
+ 
