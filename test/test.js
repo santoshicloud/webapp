@@ -12,7 +12,7 @@ describe('User Endpoint Integration Tests', () => {
     this.timeout(10000);
 
     const userData = {
-      email: 'yadav111@example.com',
+      email: 'yadav1112@example.com',
       password: 'TestPassword123',
       firstName: 'John',
       lastName: 'Doe'
