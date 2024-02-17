@@ -13,7 +13,7 @@ describe('User Endpoint Integration Tests', () => {
 
   it('Test 1: should create a user and validate account creation', async () => {
     const userData = {
-      email: 'sayali14@example.com',
+      email: 'sayali17@example.com',
       password: 'TestPassword',
       firstName: 'John',
       lastName: 'Doe'
@@ -49,3 +49,5 @@ describe('User Endpoint Integration Tests', () => {
     expect(getResponse.body.lastName).to.equal(updateData.lastName);
   });
 });
+
+
