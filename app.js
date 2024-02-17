@@ -1,17 +1,12 @@
-// app.js
-
 require('dotenv').config(); // Load environment variables from .env file
 
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
 const userRoutes = require('./routes/userRoutes');
 const { sequelize } = require('./models/userModel');
 
-
-app.use(express.json()); //using to parse JSON body
+app.use(express.json()); // Using to parse JSON body
 app.use('/v1/user', userRoutes);
-
 
 // Bootstrap the database
 async function bootstrapDatabase() {
@@ -29,37 +24,39 @@ async function bootstrapDatabase() {
   }
 }
 
-bootstrapDatabase(); // Call the function to bootstrap the database
-
-// Handle GET request for /healthz endpoint
-app.get('/healthz', async (req, res) => {
-  try {
-    // Check if the database connection is established
-    await sequelize.authenticate();
-    // If the connection is successful, respond with 200 OK
-    res.status(200).json({ status: 'OK' });
-  } catch (error) {
-    // If the connection fails, respond with 503 Service Unavailable
-    console.error('Error checking database health:', error);
-    res.status(503).json({ error: 'Service Unavailable' });
-  }
-});
-
-// Handle HEAD request for /healthz endpoint
-app.head('/healthz', async (req, res) => {
-  // Respond with 405 Method Not Allowed for HEAD requests
-  res.status(405).end();
-});
-
-// Handle unsupported methods for all other endpoints
-app.use((req, res, next) => {
-  if (req.method !== 'GET') {
-    return res.status(405).end();
-  }
-  next();
-});
-
+// If app.js is being run directly (not imported by a test file), then start the server
 if (!module.parent) {
+  const PORT = process.env.PORT || 3000;
+  bootstrapDatabase(); // Call the function to bootstrap the database
+
+  // Handle GET request for /healthz endpoint
+  app.get('/healthz', async (req, res) => {
+    try {
+      // Check if the database connection is established
+      await sequelize.authenticate();
+      // If the connection is successful, respond with 200 OK
+      res.status(200).json({ status: 'OK' });
+    } catch (error) {
+      // If the connection fails, respond with 503 Service Unavailable
+      console.error('Error checking database health:', error);
+      res.status(503).json({ error: 'Service Unavailable' });
+    }
+  });
+
+  // Handle HEAD request for /healthz endpoint
+  app.head('/healthz', async (req, res) => {
+    // Respond with 405 Method Not Allowed for HEAD requests
+    res.status(405).end();
+  });
+
+  // Handle unsupported methods for all other endpoints
+  app.use((req, res, next) => {
+    if (req.method !== 'GET') {
+      return res.status(405).end();
+    }
+    next();
+  });
+
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });

@@ -1,82 +1,49 @@
+const supertest = require('supertest');
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../app'); // Adjust the path to your Express app
+const app = require('../app'); // Ensure this is the path to your Express app initialization
 const expect = chai.expect;
-const { sequelize } = require('../models/userModel');
 
-chai.use(chaiHttp);
+const request = supertest(app);
 
-async function bootstrapDatabase() {
-  try {
-    await sequelize.authenticate(); // Test database connection
-    console.log('Connection to the database has been established successfully.');
+describe('User Endpoint Integration Tests', () => {
+  let userId;
 
-    // Synchronize database models with database schema
-    await sequelize.sync({ alter: true }); // This will automatically create tables if they don't exist
-    console.log('Database synchronized.');
+  it('Test 1: should create a user and validate account creation', async function() {
+    this.timeout(10000);
 
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-    process.exit(1); // Exit the application if unable to connect to the database
-  }
-}
+    const userData = {
+      email: 'yadav@example.com',
+      password: 'TestPassword123',
+      firstName: 'John',
+      lastName: 'Doe'
+    };
 
-bootstrapDatabase();
+    let createResponse = await request.post('/v1/user').send(userData);
+    expect(createResponse.status).to.equal(201); // 201 for successful user creation
+    userId = createResponse.body.id; // Assuming response contains user id
 
-describe('User Integration Tests', () => {
-  const userEmail = 'john15@example.com';
-  const password = 'Passrd123!';
-  const authHeader = 'Basic ' + Buffer.from(`${userEmail}:${password}`).toString('base64');
-
-  it('Test 1: Create an account and validate account exists', (done) => {
-    // Create user
-    chai.request(app)
-      .post('/v1/user')
-      .send({ email: userEmail, password, firstName: 'Lesh', lastName: 'Knna' })
-      .end((err, res) => {
-        expect(res).to.have.status(201);
-
-        // Basic Auth header for the created user
-        const createdUserAuthHeader = 'Basic ' + Buffer.from(`${userEmail}:${password}`).toString('base64');
-
-        // Validate account exists
-        chai.request(app)
-          .get('/v1/user/self')
-          .set('Authorization', createdUserAuthHeader)
-          .end((err, res) => {
-            expect(res).to.have.status(200);
-            expect(res.body.user).to.include({
-              email: userEmail,
-              firstName: 'Lesh',
-              lastName: 'Knna'
-            });
-            done();
-          });
-      });
+    const getResponse = await request.get(`/v1/user/self`).set('Authorization', `Basic ${Buffer.from(`${userData.email}:${userData.password}`).toString('base64')}`);
+    expect(getResponse.status).to.equal(200); // 200 for successful user retrieval
+    expect(getResponse.body.id).to.equal(userId);
   });
 
-  it('Test 2: Update the account and validate the account was updated', (done) => {
-    // Update user information
-    chai.request(app)
-      .put('/v1/user/self')
-      .set('Authorization', authHeader)
-      .send({ firstName: 'Updated', lastName: 'Knna' })
-      .end((err, res) => {
-        expect(res).to.have.status(200);
+  it('Test 2: should update the user and validate the updates', async function() {
+    this.timeout(10000);
 
-        // Validate account was updated
-        chai.request(app)
-          .get('/v1/user/self')
-          .set('Authorization', authHeader)
-          .end((err, res) => {
-            expect(res).to.have.status(200);
-            expect(res.body.user).to.include({
-              email: userEmail,
-              firstName: 'Updated',
-              lastName: 'Knna'
-            });
-            done();
-          });
-      });
+    const updateData = {
+      firstName: 'UpdatedFirstName',
+      lastName: 'UpdatedLastName',
+      password: 'NewSecurePassword123'
+    };
+
+    const updateResponse = await request.put('/v1/user/self')
+      .send(updateData)
+      .set('Authorization', `Basic ${Buffer.from('sammyr@example.com:TestPassword123').toString('base64')}`);
+    expect(updateResponse.status).to.equal(200); // 200 for successful user update
+
+    const getResponse = await request.get('/v1/user/self').set('Authorization', `Basic ${Buffer.from('sammyr@example.com:NewSecurePassword123').toString('base64')}`);
+    expect(getResponse.status).to.equal(200); // 200 for successful user retrieval
+    expect(getResponse.body.firstName).to.equal('UpdatedFirstName');
+    expect(getResponse.body.lastName).to.equal('UpdatedLastName');
   });
 });
