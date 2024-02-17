@@ -1,11 +1,11 @@
 name: Integration Tests
 
 env:
-  DB_HOST: "localhost"
-  DB_USER: "postgres1"
-  DB_PASSWORD: "root"
-  DB_PORT: "5432"
-  DB_DATABASE: "databasetwo"
+  DB_HOST: ${{ secrets.HOST }}
+  DB_USER: ${{ secrets.USERNAME }}
+  DB_PASSWORD: ${{ secrets.PASSWORD }}
+  DB_PORT: ${{ secrets.PORT }}
+  DB_DATABASE: ${{ secrets.DATABASE }}
 
 on:
   pull_request:

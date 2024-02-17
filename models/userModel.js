@@ -23,7 +23,7 @@ const pool = new Pool({
 });
 
 // Define the User model
-const User = sequelize.define('User', {
+const User = sequelize.define('user', {
   id: {
     type: Sequelize.UUID, // Use UUID data type for id
     defaultValue: Sequelize.UUIDV4, // Generate UUID by default

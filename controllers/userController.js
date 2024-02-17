@@ -2,9 +2,6 @@
 
 const { User } = require('../models/userModel');
 const bcrypt = require('bcrypt');
-const { sequelize } = require('../models/userModel');
-const { Op } = require('sequelize');
-const UserModel = require('../models/userModel'); // Ensure you have this line to import the UserModel
 const { v4: uuidv4 } = require('uuid');
 
 
