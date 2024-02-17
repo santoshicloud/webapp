@@ -12,7 +12,7 @@ describe('User Endpoint Integration Tests', () => {
     this.timeout(10000);
 
     const userData = {
-      email: 'yadav1112@example.com',
+      email: 'sayali@example.com',
       password: 'TestPassword123',
       firstName: 'John',
       lastName: 'Doe'
@@ -38,10 +38,10 @@ describe('User Endpoint Integration Tests', () => {
 
     const updateResponse = await request.put('/v1/user/self')
       .send(updateData)
-      .set('Authorization', `Basic ${Buffer.from('sammyr@example.com:TestPassword123').toString('base64')}`);
+      .set('Authorization', `Basic ${Buffer.from(`${userData.email}:${userData.password}`).toString('base64')}`); // Use userData credentials
     expect(updateResponse.status).to.equal(200); // 200 for successful user update
 
-    const getResponse = await request.get('/v1/user/self').set('Authorization', `Basic ${Buffer.from('sammyr@example.com:NewSecurePassword123').toString('base64')}`);
+    const getResponse = await request.get('/v1/user/self').set('Authorization', `Basic ${Buffer.from(`${userData.email}:${userData.password}`).toString('base64')}`); // Use userData credentials
     expect(getResponse.status).to.equal(200); // 200 for successful user retrieval
     expect(getResponse.body.firstName).to.equal('UpdatedFirstName');
     expect(getResponse.body.lastName).to.equal('UpdatedLastName');
