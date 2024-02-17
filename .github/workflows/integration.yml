@@ -24,8 +24,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install postgresql
-          sudo sed -i "s/ident/md5/g" /etc/postgresql/13/main/pg_hba.conf  # Modify authentication method
-          sudo systemctl restart postgresql
+         
 
       - name: Create Database
         run: |
