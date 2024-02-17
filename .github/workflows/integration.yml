@@ -22,23 +22,12 @@ jobs:
 
       - name: Install PostgreSQL
         run: |
-          # Update package repositories and install PostgreSQL
           sudo apt-get update
           sudo apt-get install -y postgresql postgresql-contrib
-
-          # Start PostgreSQL service
           sudo systemctl start postgresql.service
-
-          # Check PostgreSQL service status
-          sudo systemctl status postgresql.service
-
-          # Wait for PostgreSQL service to start
-          sleep 10
-
-          # Create database and user
-          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DB_DATABASE }};"
-          sudo -u postgres psql -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DB_DATABASE }} TO ${{ secrets.DB_USER }};"
+          sudo -u postgres psql -c "CREATE DATABASE $DB_DATABASE;"
+          sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_DATABASE TO $DB_USER;"
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
