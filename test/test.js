@@ -2,8 +2,21 @@ const supertest = require('supertest');
 const chai = require('chai');
 const app = require('../app');
 const expect = chai.expect;
+const { Pool } = require("pg");
 
 const request = supertest(app);
+
+
+const dotenv = require("dotenv");
+
+
+const envFile =  "./.env";
+dotenv.config({ path: envFile });
+
+const pool = new Pool();
+
+
+
 
 
 describe('User Endpoint Integration Tests', () => {
@@ -13,7 +26,7 @@ describe('User Endpoint Integration Tests', () => {
 
   it('Test 1: should create a user and validate account creation', async () => {
     const userData = {
-      email: 'sayali81111111@example.com',
+      email: 'sayali81115611@example.com',
       password: '123',
       firstName: 'John',
       lastName: 'Doe'
@@ -51,3 +64,7 @@ describe('User Endpoint Integration Tests', () => {
 });
 
 
+
+module.exports = {
+    query: (text, params) => pool.query(text, params),
+  };
