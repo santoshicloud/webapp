@@ -1,11 +1,11 @@
-name: Integration
+name: Integration Tests
 
 env:
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USER: ${{ secrets.DB_USERNAME }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_DATABASE: ${{ secrets.DB_NAME }}
-  DB_PORT: ${{ secrets.DB_PORT }}
+  host: ${{ secrets.HOST }}
+  databaseUser: ${{ secrets.USERNAME }}
+  databasePassword: ${{ secrets.PASSWORD }}
+  databasePort: ${{ secrets.PORT }}
+  databaseName: ${{ secrets.DATABASE }}
 
 on:
   pull_request:
@@ -23,25 +23,20 @@ jobs:
       - name: Install PostgreSQL
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql postgresql-contrib
-          sudo systemctl start postgresql.service
-          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DB_DATABASE }};"
-          sudo -u postgres psql -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}'; GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DB_DATABASE }} TO ${{ secrets.DB_USER }};"
-        
-      - name: Modify pg_hba.conf
+          sudo apt-get install postgresql
+          sudo sed -i "s/ident/md5/g" /etc/postgresql/13/main/pg_hba.conf  # Modify authentication method
+          sudo systemctl restart postgresql
+
+      - name: Create Database
         run: |
-          sudo sed -i "s/ident/md5/g" /var/lib/pgsql/data/pg_hba.conf
-          
-      - name: Restart PostgreSQL
-        run: sudo systemctl restart postgresql
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DATABASE }};"
+          sudo -u postgres psql -c "CREATE USER ${{ secrets.USERNAME }} WITH PASSWORD '${{ secrets.PASSWORD }}';"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DATABASE }} TO ${{ secrets.USERNAME }};"
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: "14.x"
-
-      - name: Print Working Directory
-        run: pwd
 
       - name: Install Dependencies
         run: npm install
