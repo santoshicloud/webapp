@@ -1,11 +1,11 @@
 name: Integration Tests
 
 env:
-  host: ${{ secrets.HOST }}
-  databaseUser: ${{ secrets.USERNAME }}
-  databasePassword: ${{ secrets.PASSWORD }}
-  databasePort: ${{ secrets.PORT }}
-  databaseName: ${{ secrets.DATABASE }}
+  DB_HOST: ${{ secrets.HOST }}
+  DB_USER: ${{ secrets.USERNAME }}
+  DB_PASSWORD: ${{ secrets.PASSWORD }}
+  DB_PORT: ${{ secrets.PORT }}
+  DB_DATABASE: ${{ secrets.DATABASE }}
 
 on:
   pull_request:
