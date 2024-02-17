@@ -12,7 +12,7 @@ describe('User Endpoint Integration Tests', () => {
     this.timeout(10000);
 
     const userData = {
-      email: 'sayali@example.com',
+      email: 'sayali4@example.com',
       password: 'TestPassword123',
       firstName: 'John',
       lastName: 'Doe'
@@ -32,14 +32,14 @@ describe('User Endpoint Integration Tests', () => {
 
     // Define userData for this test case
     const userData = {
-      email: 'sayali11@example.com',
-      password: 'TestPassword123'
+      email: 'sayali@example.com', // Use the same email as created in the first test
+      password: 'TestPassword123' // Use the same password as created in the first test
     };
 
     const updateData = {
       firstName: 'UpdatedFirstName',
       lastName: 'UpdatedLastName',
-      password: 'NewSecurePassword123'
+      password: 'NewSecurePassword123' // Provide the correct current password of the user
     };
 
     const updateResponse = await request.put('/v1/user/self')
@@ -47,7 +47,7 @@ describe('User Endpoint Integration Tests', () => {
       .set('Authorization', `Basic ${Buffer.from(`${userData.email}:${userData.password}`).toString('base64')}`); // Use userData credentials
     expect(updateResponse.status).to.equal(200); // 200 for successful user update
 
-    const getResponse = await request.get('/v1/user/self').set('Authorization', `Basic ${Buffer.from(`${userData.email}:${userData.password}`).toString('base64')}`); // Use userData credentials
+    const getResponse = await request.get('/v1/user/self').set('Authorization', `Basic ${Buffer.from(`${userData.email}:${updateData.password}`).toString('base64')}`); // Use updated password
     expect(getResponse.status).to.equal(200); // 200 for successful user retrieval
     expect(getResponse.body.firstName).to.equal('UpdatedFirstName');
     expect(getResponse.body.lastName).to.equal('UpdatedLastName');
