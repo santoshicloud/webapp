@@ -14,12 +14,6 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
   define: {
     underscored: true, // Use snake_case for automatically generated attributes (e.g., createdAt, updatedAt)
   },
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false // <<<<<<< YOU NEED THIS
-    }
-  },
 });
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
