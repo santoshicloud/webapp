@@ -13,8 +13,8 @@ describe('User Endpoint Integration Tests', () => {
 
   it('Test 1: should create a user and validate account creation', async () => {
     const userData = {
-      email: 'sayali17@example.com',
-      password: 'TestPassword',
+      email: 'sayali81@example.com',
+      password: '123',
       firstName: 'John',
       lastName: 'Doe'
     };
