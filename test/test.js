@@ -30,6 +30,12 @@ describe('User Endpoint Integration Tests', () => {
   it('Test 2: should update the user and validate the updates', async function() {
     this.timeout(10000);
 
+    // Define userData for this test case
+    const userData = {
+      email: 'sayali@example.com',
+      password: 'TestPassword123'
+    };
+
     const updateData = {
       firstName: 'UpdatedFirstName',
       lastName: 'UpdatedLastName',
