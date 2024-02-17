@@ -32,7 +32,7 @@ describe('User Endpoint Integration Tests', () => {
 
     // Define userData for this test case
     const userData = {
-      email: 'sayali@example.com',
+      email: 'sayali11@example.com',
       password: 'TestPassword123'
     };
 
