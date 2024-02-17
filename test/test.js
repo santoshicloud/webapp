@@ -7,13 +7,13 @@ const request = supertest(app);
 
 
 describe('User Endpoint Integration Tests', () => {
-  let userId;
-  let userEmail;
-  let userPassword;
+  var userId;
+  var userEmail;
+  var userPassword;
 
   it('Test 1: should create a user and validate account creation', async () => {
     const userData = {
-      email: 'sayali81@example.com',
+      email: 'sayali81111111@example.com',
       password: '123',
       firstName: 'John',
       lastName: 'Doe'
