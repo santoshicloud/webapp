@@ -22,10 +22,8 @@ jobs:
 
       - name: Install PostgreSQL
         run: |
-          sudo apt-get update
-          sudo apt-get install postgresql
-         
-
+          sudo systemctl start postgresql
+      
       - name: Create Database
         run: |
           sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DATABASE }};"
