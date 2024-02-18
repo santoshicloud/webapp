@@ -1,11 +1,11 @@
 name: Integration Tests
 
 env:
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USER: ${{ secrets.DB_USER }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-  DB_DATABASE: ${{ secrets.DB_DATABASE }}
+  DB_HOST: localhost
+  DB_USER: root
+  DB_PASSWORD: texas
+  DB_PORT: 3306
+  DB_DATABASE: cloud
 
 on:
   pull_request:
@@ -24,7 +24,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo systemctl status mysql.service || sudo systemctl start mysql.service
-          sudo mysql --user="${{ secrets.DB_USER }}" --password="${{ secrets.DB_PASSWORD }}" -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.DB_DATABASE }};"
+          sudo mysql --user="${DB_USER}" --password="${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE};"
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
