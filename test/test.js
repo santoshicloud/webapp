@@ -2,49 +2,18 @@ const supertest = require('supertest');
 const chai = require('chai');
 const app = require('../app');
 const expect = chai.expect;
-const { Pool } = require("pg");
-const { User } = require('../models/userModel');
-const { sequelize } = require('../models/userModel');
+
 const request = supertest(app);
 
-async function bootstrapDatabase() {
-    try {
-      await sequelize.authenticate(); // Test database connection
-      console.log('Connection to the database has been established successfully.');
-  
-      // Synchronize database models with database schema
-      await sequelize.sync(); // This will automatically create tables if they don't exist
-      console.log('Database synchronized.');
-  
-    } catch (error) {
-      console.error('Unable to connect to the database:', error);
-      process.exit(1); // Exit the application if unable to connect to the database
-    }
-  }
-  
-
-const dotenv = require("dotenv");
-
-
-
-const envFile =  "./.env";
-dotenv.config({ path: envFile });
-
-const pool = new Pool();
-
-
-bootstrapDatabase(); 
-
-
 describe('User Endpoint Integration Tests', () => {
-  var userId;
-  var userEmail;
-  var userPassword;
+  let userId;
+  let userEmail;
+  let userPassword;
 
   it('Test 1: should create a user and validate account creation', async () => {
     const userData = {
-      email: 'sayali811111@example.com',
-      password: '123',
+      email: 'sayali51@example.com',
+      password: 'TestPassword',
       firstName: 'John',
       lastName: 'Doe'
     };
@@ -79,9 +48,3 @@ describe('User Endpoint Integration Tests', () => {
     expect(getResponse.body.lastName).to.equal(updateData.lastName);
   });
 });
-
-
-
-module.exports = {
-    query: (text, params) => pool.query(text, params),
-  };

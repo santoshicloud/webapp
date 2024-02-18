@@ -1,11 +1,5 @@
-name: Integration Tests
 
-env:
-  DB_HOST: ${{ secrets.HOST }}
-  DB_USER: ${{ secrets.USERNAME }}
-  DB_PASSWORD: ${{ secrets.PASSWORD }}
-  DB_PORT: ${{ secrets.PORT }}
-  DB_DATABASE: ${{ secrets.DATABASE }}
+name: Integration CI
 
 on:
   pull_request:
@@ -13,33 +7,75 @@ on:
       - main
 
 jobs:
-  integration-test:
+  test:
+    name: Integration Test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Updating Packages
-        run: sudo apt-get update
-
-      - name: Install PostgreSQL
+      - name: Echo Secrets
         run: |
-          sudo systemctl start postgresql
-      
-      - name: Create Database
-        run: |
-          sudo -u postgres psql -c "CREATE DATABASE $DB_DATABASE";
-          sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_DATABASE TO $DB_USER";
+          echo "PORT: ${{ secrets.PORT }}"
+          echo "DB_NAME: ${{ secrets.DB_NAME }}"
+          echo "DB_USER: ${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
+          echo "DB_HOST: ${{ secrets.DB_HOST }}"
+          
+      - name: Start PostgreSQL Service
+        if: ${{ !contains(steps.status.outputs.service_status, 'running') }}
+        run: sudo service postgresql start
 
+      - name: Adjust Permissions on PostgreSQL Socket File
+        run: sudo chmod 777 /var/run/postgresql/.s.PGSQL.5432 || true
+
+      - name: Change PostgreSQL Password
+        run: |
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
+          
+      - name: Update PostgreSQL Authentication Method
+        run: |
+          sudo sed -i 's/^\(host.all.*all.\)\(ident\)\(.*\)$/\1md5\3/g' /etc/postgresql/14/main/pg_hba.conf
+          
+      - name: Restart PostgreSQL
+        run: sudo systemctl restart postgresql
+
+      - name: Login to PostgreSQL
+        run: |
+          export PGPASSWORD='${{ secrets.DB_PASSWORD }}'
+          psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} -c "SELECT version();"
+          
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18.x"
+          node-version: '14'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
+       
+      - name: Start the application
+        env:
+          PORT: ${{ secrets.PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+        run: |
+          npm start &
+  
+      - name: Wait for the application to be ready
+        run: |
+          sleep 10
+          until curl -s http://${{ secrets.DB_HOST }}:${{ secrets.PORT }}; do
+          sleep 5
+          done
 
-      - name: Run Tests
+      - name: Run tests
+        env:
+          PORT: ${{ secrets.PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
         run: npm test
