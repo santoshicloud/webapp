@@ -107,3 +107,4 @@ describe('User API Integration Tests', () => {
         expect(validateUpdateResponse.body.lastName).toBe(updatedUser.lastName);
     });
 });
+//these are values
