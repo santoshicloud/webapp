@@ -35,14 +35,7 @@ jobs:
         run: npm install
        
       - name: Start the application
-        env:
-          PORT: ${{ secrets.PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-        run: |
-          npm start 
+        run: sudo systemctl start postgresql
  
       - name: Run tests
         env:
