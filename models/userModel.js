@@ -2,24 +2,16 @@
 
 const Sequelize = require('sequelize');
 const { v4: uuidv4 } = require('uuid'); // Import UUID generator
-const { Pool } = require('pg')
-// Load environment variables from .env file
 require('dotenv').config();
 
 // Initialize Sequelize with database connection details
 const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  dialect: 'postgres',
+  dialect: 'mysql',
   define: {
     underscored: true, // Use snake_case for automatically generated attributes (e.g., createdAt, updatedAt)
   },
-});
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
 });
 
 // Define the User model
