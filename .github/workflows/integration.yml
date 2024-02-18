@@ -1,47 +1,38 @@
-name: Integration CI
+name: Integration Tests
+ 
+env:
+  host: ${{ secrets.HOST }}
+  databaseUser: ${{ secrets.USERNAME }}
+  databasePassword: ${{ secrets.PASSWORD }}
+  databasePort: ${{ secrets.PORT }}
+  databaseName: ${{ secrets.DATABASE }}
  
 on:
   pull_request:
     branches:
       - main
- 
+
 jobs:
-  test:
-    name: Integration Test
+  integration-test:
     runs-on: ubuntu-latest
  
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v2
  
-      - name: Echo Secrets
+      - name: Install MySQL
         run: |
-          echo "PORT: ${{ secrets.PORT }}"
-          echo "DB_NAME: ${{ secrets.DB_NAME }}"
-          echo "DB_USER: ${{ secrets.DB_USER }}"
-          echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
-          echo "DB_HOST: ${{ secrets.DB_HOST }}"
-         
-      - name: Start PostgreSQL Service
-        if: ${{ !contains(steps.status.outputs.service_status, 'running') }}
-        run: sudo service postgresql start
-  
+          sudo apt-get update
+          sudo systemctl start mysql.service
+          sudo mysql --user="${{ secrets.USERNAME }}" --password="${{ secrets.PASSWORD }}" -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.DATABASE }};"
+ 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14.x"
  
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
-       
-      - name: Start the application
-        run: sudo systemctl start postgresql
  
-      - name: Run tests
-        env:
-          PORT: ${{ secrets.PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
+      - name: Run Tests
         run: npm test
