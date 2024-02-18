@@ -30,14 +30,6 @@ jobs:
       - name: Adjust Permissions on PostgreSQL Socket File
         run: sudo chmod 777 /var/run/postgresql/.s.PGSQL.5432 || true
 
-      - name: Change PostgreSQL Password
-        run: |
-          sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
-          
-      - name: Update PostgreSQL Authentication Method
-        run: |
-          sudo sed -i 's/^\(host.all.*all.\)\(ident\)\(.*\)$/\1md5\3/g' /etc/postgresql/14/main/pg_hba.conf
-          
       - name: Restart PostgreSQL
         run: sudo systemctl restart postgresql
 
