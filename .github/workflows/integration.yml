@@ -25,13 +25,7 @@ jobs:
       - name: Start PostgreSQL Service
         if: ${{ !contains(steps.status.outputs.service_status, 'running') }}
         run: sudo service postgresql start
- 
-      - name: Login to PostgreSQL
-        run: |
-          export PGPASSWORD="${{ secrets.DB_PASSWORD }}"
-          psql -h "${{ secrets.DB_HOST }}" -U "${{ secrets.DB_USER }}" -d "${{ secrets.DB_NAME }}" -c "SELECT version();"
-      
-         
+  
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
