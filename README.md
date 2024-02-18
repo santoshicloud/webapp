@@ -17,3 +17,7 @@ we have also created a .github/workflows folder/file which contains the yml file
 Whenever a pull request us created from our feature branch in our fork to the main branch in our org, workflow is triggered and checks if all the test cases are passing.
 
 Only if all test cases are passing, then we should be able to merge our changes.
+
+Assignment 3
+Test 1 - Create an account, and using the GET call, validate account exists.
+Test 2 - Update the account and using the GET call, validate the account was updated.
