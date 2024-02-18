@@ -1,20 +1,19 @@
-
 name: Integration CI
-
+ 
 on:
   pull_request:
     branches:
       - main
-
+ 
 jobs:
   test:
     name: Integration Test
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+ 
       - name: Echo Secrets
         run: |
           echo "PORT: ${{ secrets.PORT }}"
@@ -22,35 +21,35 @@ jobs:
           echo "DB_USER: ${{ secrets.DB_USER }}"
           echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
           echo "DB_HOST: ${{ secrets.DB_HOST }}"
-          
+         
       - name: Start PostgreSQL Service
         if: ${{ !contains(steps.status.outputs.service_status, 'running') }}
         run: sudo service postgresql start
-
+ 
       - name: Adjust Permissions on PostgreSQL Socket File
         run: sudo chmod 777 /var/run/postgresql/.s.PGSQL.5432 || true
-
+ 
       - name: Change PostgreSQL Password
         run: |
           sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
-          
+         
       - name: Update PostgreSQL Authentication Method
         run: |
           sudo sed -i 's/^\(host.all.*all.\)\(ident\)\(.*\)$/\1md5\3/g' /etc/postgresql/14/main/pg_hba.conf
-          
+         
       - name: Restart PostgreSQL
         run: sudo systemctl restart postgresql
-
+ 
       - name: Login to PostgreSQL
         run: |
           export PGPASSWORD='${{ secrets.DB_PASSWORD }}'
           psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} -c "SELECT version();"
-          
+         
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-
+ 
       - name: Install dependencies
         run: npm install
        
@@ -63,14 +62,14 @@ jobs:
           DB_HOST: ${{ secrets.DB_HOST }}
         run: |
           npm start &
-  
+ 
       - name: Wait for the application to be ready
         run: |
           sleep 10
           until curl -s http://${{ secrets.DB_HOST }}:${{ secrets.PORT }}; do
           sleep 5
           done
-
+ 
       - name: Run tests
         env:
           PORT: ${{ secrets.PORT }}
