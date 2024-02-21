@@ -54,6 +54,8 @@
 
 const request = require('supertest');
 const app = require('../app'); // Adjust the path as needed
+const { sequelize } = require('../models/userModel'); // adjust the path as needed
+
 
 beforeAll(async () => {
     await sequelize.sync({ force: true });
@@ -70,9 +72,9 @@ describe('User API Integration Tests', () => {
 
     // Define user details
     const userCredentials = {
-        email: 'ravi@example.com', //change here
+        email: 'sv@example.com', //change here
         password: 'passwordlod123', //change here
-        firstName: 'ravi', //change here
+        firstName: 'sv', //change here
         lastName: 'User'
     };
 
@@ -97,7 +99,7 @@ describe('User API Integration Tests', () => {
     // Test 2: Update the account and validate the account was updated
     it('should update the account and validate the account was updated', async () => {
         const updatedUser = {
-          firstName: 'ravi', // Change this value,
+          firstName: 'sv', // Change this value,
             lastName: userCredentials.lastName // Keep original value
         };
 
