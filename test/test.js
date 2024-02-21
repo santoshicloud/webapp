@@ -85,6 +85,7 @@ describe('User API Integration Tests', () => {
     });
 
     // Test 2: Update the account and validate the account was updated
+    //adding comment
     it('should update the account and validate the account was updated', async () => {
         const updatedUser = {
           firstName: 'Tap', // Change this value,
