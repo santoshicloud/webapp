@@ -61,7 +61,7 @@ beforeAll(async () => {
     console.log('Database schema synchronized successfully.');
   });
   
-  after(async () => {
+  afterall(async () => {
     
     await sequelize.close();
     console.log('Database connection closed.');
