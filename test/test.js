@@ -56,16 +56,14 @@ const request = require('supertest');
 const app = require('../app'); // Adjust the path as needed
 
 beforeAll(async () => {
-  
     await sequelize.sync({ force: true });
     console.log('Database schema synchronized successfully.');
-  });
-  
-  afterall(async () => {
-    
+});
+
+afterAll(async () => {
     await sequelize.close();
     console.log('Database connection closed.');
-  });
+});
 
 describe('User API Integration Tests', () => {
     let createdUserId;
