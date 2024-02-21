@@ -55,14 +55,26 @@
 const request = require('supertest');
 const app = require('../app'); // Adjust the path as needed
 
+before(async () => {
+  
+    await sequelize.sync({ force: true });
+    console.log('Database schema synchronized successfully.');
+  });
+  
+  after(async () => {
+    
+    await sequelize.close();
+    console.log('Database connection closed.');
+  });
+
 describe('User API Integration Tests', () => {
     let createdUserId;
 
     // Define user details
     const userCredentials = {
-        email: 'lod@example.com', //change here
+        email: 'ravi@example.com', //change here
         password: 'passwordlod123', //change here
-        firstName: 'lod', //change here
+        firstName: 'ravi', //change here
         lastName: 'User'
     };
 
@@ -87,7 +99,7 @@ describe('User API Integration Tests', () => {
     // Test 2: Update the account and validate the account was updated
     it('should update the account and validate the account was updated', async () => {
         const updatedUser = {
-          firstName: 'lod', // Change this value,
+          firstName: 'ravi', // Change this value,
             lastName: userCredentials.lastName // Keep original value
         };
 
