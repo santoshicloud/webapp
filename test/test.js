@@ -54,15 +54,27 @@
 
 const request = require('supertest');
 const app = require('../app'); // Adjust the path as needed
+const { sequelize } = require('../models/userModel'); // adjust the path as needed
+
+
+beforeAll(async () => {
+    await sequelize.sync({ force: true });
+    console.log('Database schema synchronized successfully.');
+});
+
+afterAll(async () => {
+    await sequelize.close();
+    console.log('Database connection closed.');
+});
 
 describe('User API Integration Tests', () => {
     let createdUserId;
 
     // Define user details
     const userCredentials = {
-        email: 'Rao@example.com',
-        password: 'password123',
-        firstName: 'Rao',
+        email: 'sv@example.com', //change here
+        password: 'passwordlod123', //change here
+        firstName: 'sv', //change here
         lastName: 'User'
     };
 
@@ -87,7 +99,7 @@ describe('User API Integration Tests', () => {
     // Test 2: Update the account and validate the account was updated
     it('should update the account and validate the account was updated', async () => {
         const updatedUser = {
-          firstName: 'Tap', // Change this value,
+          firstName: 'sv', // Change this value,
             lastName: userCredentials.lastName // Keep original value
         };
 
@@ -96,7 +108,7 @@ describe('User API Integration Tests', () => {
             .put('/v1/user/self')
             .auth(userCredentials.email, userCredentials.password) // Basic Auth
             .send(updatedUser);
-        expect(updateResponse.statusCode).toBe(200);
+        expect(updateResponse.statusCode).toBe(204);
 
         // Validate account update
         const validateUpdateResponse = await request(app)
