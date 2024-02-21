@@ -55,7 +55,7 @@
 const request = require('supertest');
 const app = require('../app'); // Adjust the path as needed
 
-before(async () => {
+beforeAll(async () => {
   
     await sequelize.sync({ force: true });
     console.log('Database schema synchronized successfully.');
