@@ -51,10 +51,15 @@ jobs:
 
     - name: Format Packer template
       run: |
-        packer fmt -check -diff .
-        if [ $? -ne 0 ]; then
-          echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
-          exit 1
-        fi
+            cd packer
+            packer fmt -check -diff .
+            if [ $? -ne 0 ]; then
+            echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
+            exit 1
+            fi
+                  
     - name: Validate Packer template
-      run: packer validate .
+      run: |
+            cd packer
+            packer validate .
+          
