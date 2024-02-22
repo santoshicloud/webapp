@@ -49,14 +49,16 @@ jobs:
             packer init .
     
 
-    - name: Format Packer template
+    - name: Format Packer template and check for changes
       run: |
             cd packer
-            packer fmt -check -diff .
+            packer fmt .
+            git diff --exit-code
             if [ $? -ne 0 ]; then
-            echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
+            echo "Packer templates were not correctly formatted. Please run 'packer fmt' locally, commit the changes, and push again."
             exit 1
             fi
+          
                   
     - name: Validate Packer template
       run: |
