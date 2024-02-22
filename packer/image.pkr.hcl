@@ -22,12 +22,12 @@ build {
   ]
 
   provisioner "file" {
-    source      = "C:\\Users\\satya\\OneDrive\\Desktop\\repo\\v4\\webapplaptop\\csye6225.service"
+    source      = "C:\\Users\\satya\\OneDrive\\Desktop\\repo\\v5\\webapplaptop\\csye6225.service"
     destination = "/tmp/csye6225.service"
   }
 
   provisioner "file" {
-    source      = "C:\\Users\\satya\\OneDrive\\Desktop\\repo\\v4\\webapplaptop\\packer\\installations.sh"
+    source      = "C:\\Users\\satya\\OneDrive\\Desktop\\repo\\v5\\webapplaptop\\packer\\installations.sh"
     destination = "/tmp/installations.sh"
   }
 

@@ -10,7 +10,7 @@ sudo systemctl start mysqld
  
  
 # Set root user password for MySQL
-sudo mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED BY ‘texas’; CREATE DATABASE cloud;"
+sudo mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'texas'; CREATE DATABASE cloud;"
 
  
 sudo groupadd -f csye6225
@@ -19,7 +19,7 @@ sudo groupadd -f csye6225
 sudo useradd -m -g csye6225 -s /usr/sbin/nologin csye6225
  
  
-sudo cp /tmp/csye6225.service /lib/systemd/system/csye6225.service
+sudo cp /tmp/csye6225.service /etc/systemd/system/csye6225.service
  
 # Install unzip
 sudo dnf install -y unzip
