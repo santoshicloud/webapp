@@ -28,11 +28,11 @@ jobs:
     - name: Setup Environment File
       run: |
           cat << EOF > .env
-          host: ${{ secrets.HOSTDB}}
-          databaseUser: ${{ secrets.USERNAME }}
-          databasePassword: ${{ secrets.PASSWORD }}
-          databasePort: ${{ secrets.PORT }}
-          databaseName: ${{ secrets.DATABASE }}
+          DB_HOST: ${{ secrets.DB_HOST}}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
           EOF
       shell: bash
 
