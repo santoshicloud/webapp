@@ -4,7 +4,7 @@ on:
     pull_request:
       types: [closed]
     push:
-        branches: feature/test4
+        branches: feature/test
 
 
 
