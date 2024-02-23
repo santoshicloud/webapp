@@ -63,4 +63,5 @@ jobs:
     - name: Validate Packer template
       run: |
             cd packer
+            packer validate -var-file=variables.pkrvars.hcl .
             
