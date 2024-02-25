@@ -40,6 +40,9 @@ sudo cp /tmp/webapp.zip /opt
     sudo chmod -R 750 /opt
     # Install Node.js and npm
     sudo npm install
+    sudo npm uninstall bcrypt
+    sudo npm install bcrypt
+
  
     sudo npm test 
  
