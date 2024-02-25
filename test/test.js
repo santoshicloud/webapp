@@ -72,9 +72,9 @@ describe('User API Integration Tests', () => {
 
     // Define user details
     const userCredentials = {
-        email: 'sv@example.com', //change here
+        email: 'donga@example.com', //change here
         password: 'passwordlod123', //change here
-        firstName: 'sv', //change here
+        firstName: 'donga', //change here
         lastName: 'User'
     };
 
@@ -99,7 +99,7 @@ describe('User API Integration Tests', () => {
     // Test 2: Update the account and validate the account was updated
     it('should update the account and validate the account was updated', async () => {
         const updatedUser = {
-          firstName: 'sv', // Change this value,
+          firstName: 'donga', // Change this value,
             lastName: userCredentials.lastName // Keep original value
         };
 
