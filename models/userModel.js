@@ -58,5 +58,3 @@ module.exports = {
   sequelize,
   User,
 };
-
-//to test
