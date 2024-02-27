@@ -3,12 +3,13 @@ name: Packer Build
 on:
   pull_request:
     types: [closed]
+    
+  push:
+      branches: feature/ass5
 
 jobs:
-  build-and-deploy: 
-    if: github.event.pull_request.merged==true
-
-    runs-on: ubuntu-latest 
+  packer_ci:
+    runs-on: ubuntu-latest
     
     steps:
     - name: Check out code
@@ -22,7 +23,7 @@ jobs:
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0.4.0'
       with: 
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
     
     - name: Setup Environment File
       run: |
