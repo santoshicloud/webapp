@@ -47,8 +47,8 @@ jobs:
           cd packer
           packer init .
       
-      - name: Format Packer template
-        run: |
+    - name: Format Packer template
+      run: |
           cd packer
           packer fmt -check -diff .
           if [ $? -ne 0 ]; then
@@ -56,13 +56,13 @@ jobs:
             exit 1
           fi
       
-      - name: Validate Packer template
-        run: |
+    - name: Validate Packer template
+      run: |
           cd packer
           packer validate -var-file=variables.pkrvars.hcl image.pkr.hcl
       
-      - name: Build Packer image
-        run: |
+    - name: Build Packer image
+      run: |
           cd packer
           packer build -var-file=variables.pkrvars.hcl image.pkr.hcl
       
