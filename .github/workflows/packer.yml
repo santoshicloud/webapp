@@ -42,19 +42,27 @@ jobs:
         sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
         sudo apt-get update && sudo apt-get install packer
     
-    - name: Initialize Packer
-      run: packer init .
-    
-    - name: Format Packer template
-      run: |
-        packer fmt -check -diff .
-        if [ $? -ne 0 ]; then
-          echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
-          exit 1
-        fi
-    
-    - name: Validate Packer template
-      run: packer validate .
-    - 
-      name: Build Packer image
-      run: packer build  .
+        - name: Initialize Packer
+        run: |
+          cd packer
+          packer init .
+      
+      - name: Format Packer template
+        run: |
+          cd packer
+          packer fmt -check -diff .
+          if [ $? -ne 0 ]; then
+            echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
+            exit 1
+          fi
+      
+      - name: Validate Packer template
+        run: |
+          cd packer
+          packer validate -var-file=variables.pkrvars.hcl image.pkr.hcl
+      
+      - name: Build Packer image
+        run: |
+          cd packer
+          packer build -var-file=variables.pkrvars.hcl image.pkr.hcl
+      
