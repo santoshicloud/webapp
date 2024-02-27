@@ -48,7 +48,7 @@ variable "webapp_zip_path" {
 }
 
 source "googlecompute" "Webapp-packer" {
-  project_id          = var.project_id
+  project_id      = var.project_id
   source_image_family = var.source_image_family
   image_name          = var.image_name
   ssh_username        = var.ssh_username
