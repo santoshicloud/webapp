@@ -3,12 +3,13 @@ name: Packer Build
 on:
   pull_request:
     types: [closed]
+    
+  push:
+      branches: feature/ass5
 
 jobs:
-  build-and-deploy: 
-    if: github.event.pull_request.merged==true
-
-    runs-on: ubuntu-latest 
+  packer_ci:
+    runs-on: ubuntu-latest
     
     steps:
     - name: Check out code
@@ -22,7 +23,7 @@ jobs:
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0.4.0'
       with: 
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
     
     - name: Setup Environment File
       run: |
@@ -41,19 +42,27 @@ jobs:
         sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
         sudo apt-get update && sudo apt-get install packer
     
-    - name: Initialize Packer
-      run: packer init .
-    
-    - name: Format Packer template
-      run: |
-        packer fmt -check -diff .
-        if [ $? -ne 0 ]; then
-          echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
-          exit 1
-        fi
-    
-    - name: Validate Packer template
-      run: packer validate .
-    - 
-      name: Build Packer image
-      run: packer build  .
+        - name: Initialize Packer
+        run: |
+          cd packer
+          packer init .
+      
+      - name: Format Packer template
+        run: |
+          cd packer
+          packer fmt -check -diff .
+          if [ $? -ne 0 ]; then
+            echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
+            exit 1
+          fi
+      
+      - name: Validate Packer template
+        run: |
+          cd packer
+          packer validate -var-file=variables.pkrvars.hcl image.pkr.hcl
+      
+      - name: Build Packer image
+        run: |
+          cd packer
+          packer build -var-file=variables.pkrvars.hcl image.pkr.hcl
+      
