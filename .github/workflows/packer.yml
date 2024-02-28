@@ -1,68 +1,67 @@
-name: Packer Build
-  
+name: Packer 
+
 on:
-  pull_request:
-    types: [closed]
-    
   push:
-      branches: feature/ass5
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 
 jobs:
-  packer_ci:
+  packer:
     runs-on: ubuntu-latest
-    
+ 
+
     steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-    
-    - name: Zip all the webapp files
+    - uses: actions/checkout@v3
+    - name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0.4.0'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+      
+    - name: Zip repository
       run: |
         zip -r webapp.zip ./
         pwd
     
-    - name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v0.4.0'
-      with: 
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
-    
+
     - name: Setup Environment File
       run: |
-        cat << EOF > .env
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_DATABASE: ${{ secrets.DB_DATABASE }}
-        EOF
+            cat << EOF > .env
+            DB_HOST: ${{ secrets.DB_HOST }}
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_DATABASE: ${{ secrets.DB_DATABASE }}
+            DB_PORT: ${{secrets.DB_PORT}}
+            EOF
       shell: bash
-    
+  
+  
     - name: Install Packer
       run: |
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
         sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
         sudo apt-get update && sudo apt-get install packer
+      shell: bash
+
+   
+
+  
+    - name: Initialize Packer
+      run: packer init .
+      working-directory: ./packer
+  
     
-        - name: Initialize Packer
-        run: |
-          cd packer
-          packer init .
+  
       
-      - name: Format Packer template
-        run: |
-          cd packer
+    - name: Format Packer template
+      run: |
           packer fmt -check -diff .
           if [ $? -ne 0 ]; then
             echo "Packer templates need formatting. Run 'packer fmt' locally and push the changes."
             exit 1
           fi
-      
-      - name: Validate Packer template
-        run: |
-          cd packer
-          packer validate -var-file=variables.pkrvars.hcl image.pkr.hcl
-      
-      - name: Build Packer image
-        run: |
-          cd packer
-          packer build -var-file=variables.pkrvars.hcl image.pkr.hcl
-      
+  
+    - name: Validate Packer template
+      run: packer validate .
+      working-directory: ./packer
