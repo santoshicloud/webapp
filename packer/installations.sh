@@ -29,7 +29,7 @@ sudo npm install bcrypt
 sudo cp /tmp/webapp.zip /opt/webapp.zip
 cd /opt || exit
 sudo unzip webapp.zip
-sudo cp /tmp/.env /opt
+# sudo cp /tmp/.env /opt
 
 # Change directory ownership to user csye6g225
 sudo chown -R csye6225:csye6225 /opt
