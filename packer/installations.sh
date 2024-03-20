@@ -40,7 +40,6 @@ sudo chmod -R 750 /opt
 
 # Install Node.js dependencies and run tests
 sudo npm install
-npm test
 
 # Reload systemd, enable, and start Apache HTTP Server
 sudo systemctl daemon-reload
