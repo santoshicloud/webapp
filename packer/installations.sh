@@ -1,13 +1,4 @@
 #!/bin/bash
- 
- 
-# Install MySQL
-sudo dnf install -y mysql-server
-sudo systemctl enable mysqld
-sudo systemctl start mysqld
-# Set root user password for MySQL and create database API
-# Note: The command is corrected to be properly enclosed and executed.
-sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'texas'; CREATE DATABASE cloud; SHOW GRANTS FOR 'root'@'localhost';"
 
 # Create group csye6225 if it doesn't already exist
 sudo groupadd -f csye6225
@@ -49,7 +40,6 @@ sudo chmod -R 750 /opt
 
 # Install Node.js dependencies and run tests
 sudo npm install
-sudo npm test
 
 # Reload systemd, enable, and start Apache HTTP Server
 sudo systemctl daemon-reload
