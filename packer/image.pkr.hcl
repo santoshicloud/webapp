@@ -31,10 +31,10 @@ build {
     destination = "/tmp/installations.sh"
   }
 
-   provisioner "file" {
-  source      = "../.env"
-  destination = "/tmp/.env"
-}
+//    provisioner "file" {
+//   source      = "../.env"
+//   destination = "/tmp/.env"
+// }
 
   provisioner "file" {
     source      = "../webapp.zip"
