@@ -52,3 +52,5 @@ sudo systemctl start csye6225
 
 # Optionally, check the status of the custom service
 sudo systemctl status csye6225
+
+sudo journalctl -xe
