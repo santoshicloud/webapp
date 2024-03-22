@@ -31,6 +31,9 @@ cd /opt || exit
 sudo unzip webapp.zip
 # sudo cp /tmp/.env /opt
 
+# Create .env file
+sudo touch /opt/.env
+
 # Change directory ownership to user csye6g225
 sudo chown -R csye6225:csye6225 /opt
 
