@@ -1,9 +1,28 @@
 require('dotenv').config(); // Load environment variables from .env file
 
 const express = require('express');
+const winston = require('winston');
 const app = express();
 const userRoutes = require('./routes/userRoutes');
 const { sequelize } = require('./models/userModel');
+const logger = require('./logger');
+
+// Setting up Winston logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' })
+  ],
+});
+
+// If we're not in production then log to the `console` with the format:
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
 
 app.use(express.json()); // Using to parse JSON body
 app.use('/v1/user', userRoutes);
@@ -36,9 +55,10 @@ if (!module.parent) {
       await sequelize.authenticate();
       // If the connection is successful, respond with 200 OK
       res.status(200).json({ status: 'OK' });
+      logger.info('Health check passed');
     } catch (error) {
       // If the connection fails, respond with 503 Service Unavailable
-      console.error('Error checking database health:', error);
+      logger.error('Error checking database health:', error);
       res.status(503).json({ error: 'Service Unavailable' });
     }
   });
@@ -47,11 +67,13 @@ if (!module.parent) {
   app.head('/healthz', async (req, res) => {
     // Respond with 405 Method Not Allowed for HEAD requests
     res.status(405).end();
+    logger.warn('HEAD request to /healthz not supported');
   });
 
   // Handle unsupported methods for all other endpoints
   app.use((req, res, next) => {
     if (req.method !== 'GET') {
+      logger.warn('Unsupported request method:', req.method);
       return res.status(405).end();
     }
     next();
