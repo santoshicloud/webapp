@@ -47,10 +47,11 @@ build {
   }
 
   provisioner "shell" {
-    script = "/tmp/installations.sh"
-  }
+  script = "installations.sh"
+}
 
-  provisioner "shell" {
-    script = "/tmp/opsAgent.sh"
-  }
+provisioner "shell" {
+  script = "opsAgent.sh"
+}
+
 }
