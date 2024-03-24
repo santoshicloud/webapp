@@ -1,6 +1,6 @@
 [Unit]
 Description=CSYE 6225 app.js
-ConditionPathExists=/opt/app.js
+ConditionPathExists=/opt
 After=network.target
 
 [Service]
@@ -8,7 +8,7 @@ Type=simple
 User=csye6225
 Group=csye6225
 WorkingDirectory=/opt
-ExecStartPre=/bin/bash -c 'while [ ! -f /opt/.env ]; do sleep 1; done'
+ExecStartPre=/bin/bash -c 'counter=0; while [ ! -f /opt/.env ]; do sleep 1; ((counter++)); if [ "$counter" -eq 30 ]; then echo "Timeout waiting for .env file"; exit 1; fi; done'
 ExecStart=/usr/bin/node /opt/app.js
 Restart=always
 RestartSec=3
