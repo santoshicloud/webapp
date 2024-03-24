@@ -41,7 +41,16 @@ build {
     destination = "/tmp/webapp.zip"
   }
 
+  provisioner "file" {
+    source      = "opsAgent.sh"
+    destination = "/tmp/opsAgent.sh"
+  }
+
   provisioner "shell" {
-    script = "installations.sh"
+    script = "/tmp/installations.sh"
+  }
+
+  provisioner "shell" {
+    script = "/tmp/opsAgent.sh"
   }
 }
