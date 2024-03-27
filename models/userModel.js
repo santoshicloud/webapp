@@ -47,10 +47,15 @@ const User = sequelize.define('user', {
     type: Sequelize.DATE,
     allowNull: true, // Allow null initially
   },
+  isEmailVerified: {
+    type: Sequelize.BOOLEAN, // Corrected from DataTypes.BOOLEAN
+    allowNull: false,
+    defaultValue: false, // Assuming new users are not verified by default
+  },
 });
 
 // Add hook to update account_updated field before saving
-User.beforeSave((user, options) => {
+User.addHook('beforeSave', (user, options) => {
   user.account_updated = new Date(); // Update account_updated field before saving
 });
 

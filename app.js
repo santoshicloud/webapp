@@ -6,6 +6,7 @@ const app = express();
 const userRoutes = require('./routes/userRoutes');
 const { sequelize } = require('./models/userModel');
 const logger = require('./logger');
+const userController = require('./controllers/userController')
 
 // If we're not in production then log to the `console` with the format:
 if (process.env.NODE_ENV !== 'production') {

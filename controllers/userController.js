@@ -4,6 +4,8 @@ const { User } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../logger');
+const { PubSub } = require('@google-cloud/pubsub');
+const { Sequelize, Op } = require('sequelize');
 
 
 exports.createUser = async (req, res) => {
@@ -26,22 +28,19 @@ exports.createUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     logger.info(`Create User: Password hashed for user: ${email}`);
 
-    // Set current time for account creation and update
-    const currentTime = new Date();
-
     // Create the user in the database
-    logger.info(`Create User: Creating user in the database with email: ${email}`);
     const user = await User.create({
       email,
       password: hashedPassword,
       firstName,
       lastName,
-      account_created: currentTime,
+      // Other fields are automatically handled by Sequelize
     });
-    logger.info(`Create User: User created successfully with email: ${email}`);
+
+    // After successful user creation, call publishVerificationMessage
+    await publishVerificationMessage(user.id, email, firstName, lastName);
 
     // Respond with the user information
-    const id = uuidv4();
     res.status(201).json({ 
       id: user.id,
       email: user.email,
@@ -50,6 +49,7 @@ exports.createUser = async (req, res) => {
       account_created: user.account_created,
       account_updated: user.account_updated,
     });
+    logger.info(`Create User: User created successfully with email: ${email}`);
   } catch (error) {
     logger.warn(`Create User: Error creating user with email: ${email}`, error);
     res.status(400).json({ error: "An error occurred while creating the user." });
@@ -176,3 +176,4 @@ exports.updateUserInfo = async (req, res) => {
     return res.status(500).json({ error: "An error occurred while updating user information." });
   }
 };
+
