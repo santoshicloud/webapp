@@ -93,6 +93,29 @@ exports.createUser = async (req, res) => {
   }
 };
 
+exports.verifyUser = async (req, res) => {
+  const { token } = req.query; // Assuming the token is sent as a query parameter
+
+  if (!token) {
+    return res.status(400).json({ error: "Verification token is required." });
+  }
+
+  try {
+    const user = await User.findOne({ where: { verificationToken: token, tokenExpiry: { [Op.gt]: new Date() } } });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found or token expired." });
+    }
+
+    // Update user to verified
+    await user.update({ isEmailVerified: true, verificationToken: null, tokenExpiry: null });
+
+    res.status(200).json({ message: "Email successfully verified" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to verify email." });
+  }
+};
+
 
 
 exports.getUserInfo = async (req, res) => {
