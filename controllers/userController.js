@@ -4,7 +4,40 @@ const { User } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../logger');
+const { PubSub } = require('@google-cloud/pubsub');
+const { addMinutes } = require('date-fns');
 
+
+const pubSubClient = new PubSub({
+  projectId: process.env.cloud_project
+});
+
+// publishVerificationMessage function
+async function publishVerificationMessage(userId, email, firstName, lastName) {
+  const token = uuidv4();
+  const expiresTime = addMinutes(new Date(), 2);
+  await User.update({ verificationToken: token, tokenExpiry: expiresTime }, { where: { id: userId } });
+
+  const verificationLink = `https://santoshicloud.me/verify?token=${token}`;
+
+  const messageData = JSON.stringify({
+      userId,
+      email,
+      fullName: `${firstName} ${lastName}`,
+      verificationLink
+  });
+  const message = {
+      data: Buffer.from(messageData),
+  };
+  try {
+      await pubSubClient.topic('projects/devproject-414823/topics/verify_email').publishMessage(message);
+      logger.info(`Verification email message published for user ${email}`);
+      console.log('sent')
+  } catch (error) {
+      logger.error(`Failed to publish verification email message for user ${userId}`, error);
+      console.log(error)
+  }
+}
 
 exports.createUser = async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
@@ -40,6 +73,10 @@ exports.createUser = async (req, res) => {
     });
     logger.info(`Create User: User created successfully with email: ${email}`);
 
+    await publishVerificationMessage(user.id, email, firstName, lastName); 
+    await user.update({ mailSentAt: new Date() });
+
+
     // Respond with the user information
     const id = uuidv4();
     res.status(201).json({ 
@@ -55,6 +92,7 @@ exports.createUser = async (req, res) => {
     res.status(400).json({ error: "An error occurred while creating the user." });
   }
 };
+
 
 
 exports.getUserInfo = async (req, res) => {
@@ -176,3 +214,5 @@ exports.updateUserInfo = async (req, res) => {
     return res.status(500).json({ error: "An error occurred while updating user information." });
   }
 };
+
+
