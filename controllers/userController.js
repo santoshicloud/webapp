@@ -18,7 +18,7 @@ async function publishVerificationMessage(userId, email, firstName, lastName) {
   const expiresTime = addMinutes(new Date(), 2);
   await User.update({ verificationToken: token, tokenExpiry: expiresTime }, { where: { id: userId } });
 
-  const verificationLink = `https://santoshicloud.me/verify?token=${token}`;
+  const verificationLink = `https://santoshicloud.me:3000/verify?token=${token}`;
 
   const messageData = JSON.stringify({
       userId,
@@ -94,7 +94,7 @@ exports.createUser = async (req, res) => {
 };
 
 exports.verifyUser = async (req, res) => {
-  const { token } = req.query; // Assuming the token is sent as a query parameter
+  const token = req.params.token; // Retrieve the token from URL parameter
 
   if (!token) {
     return res.status(400).json({ error: "Verification token is required." });
