@@ -47,14 +47,18 @@ const User = sequelize.define('user', {
     type: Sequelize.DATE,
     allowNull: true, // Allow null initially
   },
-  verificationToken: {
-    type: Sequelize.STRING,
-    allowNull: true
-},
-tokenExpiry: {
-    type: Sequelize.DATE,
-    allowNull: true
-}
+  isEmailVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,  
+  },
+  mailSentAt : {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  verificationLink : {
+    type: DataTypes.STRING,
+    defaultValue:false
+  }
 
 });
 
