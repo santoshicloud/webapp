@@ -45,7 +45,7 @@ const User = sequelize.define('user', {
   },
   account_updated: {
     type: Sequelize.DATE,
-    allowNull: true, // Allow null initially
+    allowNull: true, 
   },
   isEmailVerified: {
     type: DataTypes.BOOLEAN,
