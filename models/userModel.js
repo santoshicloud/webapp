@@ -64,7 +64,7 @@ const User = sequelize.define('user', {
 
 // Add hook to update account_updated field before saving
 User.beforeSave((user, options) => {
-  user.account_updated = new Date(); // Update account_updated field before saving
+  user.account_updated = new Date(); 
 });
 
 module.exports = {
