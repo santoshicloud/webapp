@@ -137,7 +137,7 @@ exports.getUserInfo = async (req, res) => {
   const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
   // Split the credentials into username and password
   const [username, password] = credentials.split(':');
-  // Assuming username is the user's email address
+  
   const userEmail = username;
   try {
     // Query the database to retrieve user information based on the email
