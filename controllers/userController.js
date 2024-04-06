@@ -14,7 +14,8 @@ const pubSubClient = new PubSub({
 
 // publishVerificationMessage function
 async function publishVerificationMessage(userId, email, firstName, lastName) {
-  const token = uuidv4();
+  const token = userId;
+  console.log(`Verification token for user ${email}: ${token}`); // Added print statement for the token
   const expiresTime = addMinutes(new Date(), 2);
   await User.update({ verificationToken: token, tokenExpiry: expiresTime }, { where: { id: userId } });
 
@@ -73,13 +74,15 @@ exports.createUser = async (req, res) => {
       account_created: currentTime,
     });
     logger.info(`Create User: User created successfully with email: ${email}`);
+    console.log(`User created with UUID: ${user.id}`);
 
     await publishVerificationMessage(user.id, email, firstName, lastName); 
     await user.update({ mailSentAt: new Date() });
 
 
     // Respond with the user information
-    const id = uuidv4();
+    // const id = uuidv4();
+    // logger.info(`Create User: UUID generated for user: ${id}`);
     res.status(201).json({ 
       id: user.id,
       email: user.email,
@@ -93,6 +96,9 @@ exports.createUser = async (req, res) => {
     res.status(400).json({ error: "An error occurred while creating the user." });
   }
 };
+
+
+
 
 exports.verifyUser = async (req, res) => {
   // const token = req.params.token;
@@ -149,7 +155,8 @@ exports.getUserInfo = async (req, res) => {
     }
 
     // Return user information if authentication is successful
-    const id = uuidv4(); // Generate a new UUID
+    // const id = uuidv4(); // Generate a new UUID
+    // logger.info(`Create User: UUID generated for user: ${id}`);
     res.status(200).json({ 
       id: user.id,
       email: user.email,
