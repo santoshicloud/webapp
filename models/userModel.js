@@ -1,6 +1,6 @@
 // models/userModel.js
 
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const { v4: uuidv4 } = require('uuid'); // Import UUID generator
 require('dotenv').config();
 
@@ -48,16 +48,16 @@ const User = sequelize.define('user', {
     allowNull: true, 
   },
   isEmailVerified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,  
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
-  mailSentAt : {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
+  mailSentAt: {
+    type: Sequelize.DATE,
+    defaultValue: Sequelize.NOW,
   },
-  verificationLink : {
-    type: DataTypes.STRING,
-    defaultValue:false
+  verificationLink: {
+    type: Sequelize.STRING,
+    defaultValue: null  // Changed from false to null
   }
 
 });
