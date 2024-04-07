@@ -20,7 +20,7 @@ async function publishVerificationMessage(userId, email, firstName, lastName) {
   await User.update({ verificationToken: token, tokenExpiry: expiresTime }, { where: { id: userId } });
 
   // const verificationLink = `https://santoshicloud.me:3000/verify?token=${token}`;
-  const verificationLink = `http://santoshicloud.me:3000/verify?token=${token}`;
+  const verificationLink = `http://santoshicloud.me:3000/v1/user/verify?token=${token}`;
 
   const messageData = JSON.stringify({
       userId,
@@ -103,21 +103,25 @@ exports.createUser = async (req, res) => {
 exports.verifyUser = async (req, res) => {
   // const token = req.params.token;
   const token = req.query.token;
+  console.log(token);
 
   if (!token) {
     return res.status(400).json({ error: "Verification token is required." });
   }
 
   try {
-    const user = await User.findOne({ where: { verificationToken: token, tokenExpiry: { [Op.gt]: new Date() } } });
+    const user = await User.findOne({ where: { id: token } } );
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ error: "User not found or token expired." });
     }
 
     // Update user to verified
-    await user.update({ isEmailVerified: true, verificationToken: null, tokenExpiry: null });
-
+    // await user.update({ isEmailVerified: true, verificationToken: null, tokenExpiry: null });
+    user.is_email_verified = true;
+    await user.save();
+    console.log(user);
     res.status(200).json({ message: "Email successfully verified" });
   } catch (error) {
     res.status(500).json({ error: "Failed to verify email." });
