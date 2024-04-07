@@ -117,6 +117,12 @@ exports.verifyUser = async (req, res) => {
       return res.status(404).json({ error: "User not found or token expired." });
     }
 
+    // Check if the token is expired
+    const currentTime = new Date();
+    if (currentTime > user.tokenExpiry) {
+      return res.status(400).json({ error: "Verification token has expired." });
+    }
+
     // Update user to verified
     // await user.update({ isEmailVerified: true, verificationToken: null, tokenExpiry: null });
     user.is_email_verified = true;
