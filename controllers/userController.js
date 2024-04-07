@@ -14,12 +14,13 @@ const pubSubClient = new PubSub({
 
 // publishVerificationMessage function
 async function publishVerificationMessage(userId, email, firstName, lastName) {
-  const token = uuidv4();
+  const token = userId;
+  console.log(`Verification token for user ${email}: ${token}`); // Added print statement for the token
   const expiresTime = addMinutes(new Date(), 2);
   await User.update({ verificationToken: token, tokenExpiry: expiresTime }, { where: { id: userId } });
 
   // const verificationLink = `https://santoshicloud.me:3000/verify?token=${token}`;
-  const verificationLink = `http://santoshicloud.me:3000/verify?token=${token}`;
+  const verificationLink = `http://santoshicloud.me:3000/v1/user/verify?token=${token}`;
 
   const messageData = JSON.stringify({
       userId,
@@ -73,13 +74,15 @@ exports.createUser = async (req, res) => {
       account_created: currentTime,
     });
     logger.info(`Create User: User created successfully with email: ${email}`);
+    console.log(`User created with UUID: ${user.id}`);
 
     await publishVerificationMessage(user.id, email, firstName, lastName); 
     await user.update({ mailSentAt: new Date() });
 
 
     // Respond with the user information
-    const id = uuidv4();
+    // const id = uuidv4();
+    // logger.info(`Create User: UUID generated for user: ${id}`);
     res.status(201).json({ 
       id: user.id,
       email: user.email,
@@ -94,24 +97,31 @@ exports.createUser = async (req, res) => {
   }
 };
 
+
+
+
 exports.verifyUser = async (req, res) => {
   // const token = req.params.token;
   const token = req.query.token;
+  console.log(token);
 
   if (!token) {
     return res.status(400).json({ error: "Verification token is required." });
   }
 
   try {
-    const user = await User.findOne({ where: { verificationToken: token, tokenExpiry: { [Op.gt]: new Date() } } });
+    const user = await User.findOne({ where: { id: token } } );
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ error: "User not found or token expired." });
     }
 
     // Update user to verified
-    await user.update({ isEmailVerified: true, verificationToken: null, tokenExpiry: null });
-
+    // await user.update({ isEmailVerified: true, verificationToken: null, tokenExpiry: null });
+    user.is_email_verified = true;
+    await user.save();
+    console.log(user);
     res.status(200).json({ message: "Email successfully verified" });
   } catch (error) {
     res.status(500).json({ error: "Failed to verify email." });
@@ -131,7 +141,7 @@ exports.getUserInfo = async (req, res) => {
   const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
   // Split the credentials into username and password
   const [username, password] = credentials.split(':');
-  // Assuming username is the user's email address
+  
   const userEmail = username;
   try {
     // Query the database to retrieve user information based on the email
@@ -149,7 +159,8 @@ exports.getUserInfo = async (req, res) => {
     }
 
     // Return user information if authentication is successful
-    const id = uuidv4(); // Generate a new UUID
+    // const id = uuidv4(); // Generate a new UUID
+    // logger.info(`Create User: UUID generated for user: ${id}`);
     res.status(200).json({ 
       id: user.id,
       email: user.email,

@@ -1,6 +1,6 @@
 // models/userModel.js
 
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const { v4: uuidv4 } = require('uuid'); // Import UUID generator
 require('dotenv').config();
 
@@ -45,22 +45,26 @@ const User = sequelize.define('user', {
   },
   account_updated: {
     type: Sequelize.DATE,
-    allowNull: true, // Allow null initially
+    allowNull: true, 
   },
-  verificationToken: {
-    type: Sequelize.STRING,
-    allowNull: true
-},
-tokenExpiry: {
+  isEmailVerified: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  mailSentAt: {
     type: Sequelize.DATE,
-    allowNull: true
-}
+    defaultValue: Sequelize.NOW,
+  },
+  verificationLink: {
+    type: Sequelize.STRING,
+    defaultValue: null  // Changed from false to null
+  }
 
 });
 
 // Add hook to update account_updated field before saving
 User.beforeSave((user, options) => {
-  user.account_updated = new Date(); // Update account_updated field before saving
+  user.account_updated = new Date(); 
 });
 
 module.exports = {
