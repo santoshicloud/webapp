@@ -12,7 +12,7 @@ const pubSubClient = new PubSub({
   projectId: process.env.cloud_project
 });
 
-// publishVerificationMessage function
+// publishVerificationMessage functions
 async function publishVerificationMessage(userId, email, firstName, lastName) {
   const token = userId;
   console.log(`Verification token for user ${email}: ${token}`); // Added print statement for the token
