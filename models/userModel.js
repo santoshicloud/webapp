@@ -50,6 +50,7 @@ const User = sequelize.define('user', {
   isEmailVerified: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
+    field: 'is_email_verified'
   },
   mailSentAt: {
     type: Sequelize.DATE,
