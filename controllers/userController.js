@@ -164,6 +164,11 @@ exports.getUserInfo = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+     // Check if the user's email is verified
+     if (user.is_email_verified !== 1) {
+      return res.status(403).json({ error: "Email not verified. Access denied." });
+    }
+
     // Compare provided password with stored password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
@@ -207,6 +212,11 @@ exports.updateUserInfo = async (req, res) => {
     if (!user) {
       logger.warn(`Update User Info: User not found with email: ${userEmail}`);
       return res.status(404).json({ error: "User not found" });
+    }
+
+     // Check if the user's email is verified
+     if (user.is_email_verified !== 1) {
+      return res.status(403).json({ error: "Email not verified. Access denied." });
     }
 
     // Ensure the user is updating their own account
