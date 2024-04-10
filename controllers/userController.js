@@ -20,7 +20,7 @@ async function publishVerificationMessage(userId, email, firstName, lastName) {
   await User.update({ verificationToken: token, tokenExpiry: expiresTime }, { where: { id: userId } });
 
   // const verificationLink = `https://santoshicloud.me:3000/verify?token=${token}`;
-  const verificationLink = `http://santoshicloud.me:3000/v1/user/verify?token=${token}`;
+  const verificationLink = `https://santoshicloud.me/v1/user/verify?token=${token}`;
 
   const messageData = JSON.stringify({
       userId,
