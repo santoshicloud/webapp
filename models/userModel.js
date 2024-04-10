@@ -19,7 +19,7 @@ const User = sequelize.define('user', {
   id: {
     type: Sequelize.UUID, // Use UUID data type for id
     defaultValue: Sequelize.UUIDV4, // Generate UUID by default
-    primaryKey: true, // Make id the primary key
+    primaryKey: true, // Make id the primary key ok
   },
   email: {
     type: Sequelize.STRING,
