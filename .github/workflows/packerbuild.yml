@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == false
     runs-on: ubuntu-latest
 
     steps:
@@ -97,7 +97,7 @@ jobs:
     - name: Get instance key
       id: get_instance_key
       run: |
-       instance_key=$(gcloud kms keys list --location=${{ secrets.REGION }} --keyring=${{ steps.get_latestck.outputs.latestck }} --project=devproject-414823 --filter=name:vm-machine-key --format="value(name)")
+       instance_key=$(gcloud kms keys list --location=${{ secrets.REGION }} --keyring=${{ steps.get_latestck.outputs.latestck }} --project=devproject-414823 --filter=name:vm-key-1 --format="value(name)")
        echo "::set-output name=instance_key::$instance_key"
        echo "instance_key=$instance_key"
 
@@ -107,7 +107,7 @@ jobs:
         --instance-template-region=${{ secrets.REGION }}  \
         --project=${{secrets.PROJECT_ID}} \
         --machine-type=${{secrets.MACHINE_TYPE}} \
-        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v1/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
+        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v2/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
         --metadata=startup-script="#!/bin/bash
           echo \"DB_HOST=${{secrets.HOST_IP}}\" > /opt/.env
           echo \"DB_USER=${{secrets.DB_USER}}\" >> /opt/.env
@@ -131,7 +131,7 @@ jobs:
     - name: Configure Instance Groups
       run: |
         gcloud compute instance-groups managed rolling-action start-update ${{steps.get_groupmanager.outputs.groupmanager}} \
-          --version=template=https://compute.googleapis.com/compute/v1/projects/devproject-414823/regions/us-east4/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
+          --version=template=https://compute.googleapis.com/compute/v2/projects/devproject-414823/regions/us-east4/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
           --max-unavailable=3 \
           --region=${{secrets.REGION}}
 
