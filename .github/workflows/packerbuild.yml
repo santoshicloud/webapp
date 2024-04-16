@@ -8,7 +8,7 @@ env:
 
 on:
   push:
-    branches: ["test1001"]
+    branches: ["main"]
 
 
 jobs:
