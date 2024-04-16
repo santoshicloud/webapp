@@ -107,7 +107,7 @@ jobs:
         --instance-template-region=${{ secrets.REGION }}  \
         --project=${{secrets.PROJECT_ID}} \
         --machine-type=${{secrets.MACHINE_TYPE}} \
-        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v2/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
+        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v1/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
         --metadata=startup-script="#!/bin/bash
           echo \"DB_HOST=${{secrets.HOST_IP}}\" > /opt/.env
           echo \"DB_USER=${{secrets.DB_USER}}\" >> /opt/.env
@@ -131,7 +131,7 @@ jobs:
     - name: Configure Instance Groups
       run: |
         gcloud compute instance-groups managed rolling-action start-update ${{steps.get_groupmanager.outputs.groupmanager}} \
-          --version=template=https://compute.googleapis.com/compute/v2/projects/devproject-414823/regions/us-east4/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/devproject-414823/regions/us-east4/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
           --max-unavailable=3 \
           --region=${{secrets.REGION}}
 
