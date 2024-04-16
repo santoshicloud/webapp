@@ -7,13 +7,12 @@ env:
   databaseName: ${{ secrets.DATABASE }}
 
 on:
-  pull_request:
-    types: [closed]
+  push:
+    branches: ["test1001"]
 
 
 jobs:
   packer_build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -61,3 +60,82 @@ jobs:
     - name: Build Packer image
       run: packer build .
       working-directory: ./packer
+
+      #assignment9
+
+    - name: Print the project ID
+      run: echo ${{ secrets.PROJECT_ID }}
+
+    - name: Get Latest Image from GCP Console
+      id: get_Image
+      run: |
+        IMAGE=$(gcloud compute images list --project devproject-414902 --filter='name:centos-stream-8-custom-*' --sort-by=~creationTimestamp --limit=1 --format='value(name)')
+        echo "::set-output name=IMAGE::$IMAGE"
+        echo "IMAGE: $IMAGE"
+
+    - name: Get Managed Instance Group
+      id: get_groupmanager
+      run: |
+        groupmanager=$(gcloud compute instance-groups managed list --regions ${{ secrets.REGION }} --format="value(name)" --limit 1)
+        echo "::set-output name=groupmanager::$groupmanager"
+        echo "groupmanager: $groupmanager"
+
+      
+    - name: Get latestck
+      id: get_latestck
+      run: |
+        latestck=$(gcloud kms keyrings list --location=${{ secrets.REGION }} --project=${{secrets.PROJECT_ID}} --format="value(name, createTime)" | sort -k2,2r | head -n1 | awk '{print $1}')
+        
+        echo "::set-output name=latestck::$latestck"
+        echo "latestck=$latestck"
+
+    - name: get service account 
+      run: |
+         echo "${{secrets.EMAIL}}"
+
+    - name: Get instance key
+      id: get_instance_key
+      run: |
+       instance_key=$(gcloud kms keys list --location=${{ secrets.REGION }} --keyring=${{ steps.get_latestck.outputs.latestck }} --project=${{ secrets.PROJECT_ID }} --filter=name:vm-machine-key --format="value(name)")
+       echo "::set-output name=instance_key::$instance_key"
+       echo "instance_key=$instance_key"
+
+    - name: Create Instance Template
+      run: |
+        gcloud compute instance-templates create instance-template-$(date +%Y%m%d%H%M%S) \
+        --instance-template-region=${{ secrets.REGION }}  \
+        --project=${{secrets.PROJECT_ID}} \
+        --machine-type=${{secrets.MACHINE_TYPE}} \
+        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v1/projects/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
+        --metadata=startup-script="#!/bin/bash
+          echo \"DB_HOST=${{secrets.HOST_IP}}\" > /opt/.env
+          echo \"DB_USER=${{secrets.DB_USER}}\" >> /opt/.env
+          echo \"DB_PASSWORD=${{secrets.RANDOM_PASSWORD}}\" >> /opt/.env
+          echo \"DB_DATABASE=${{secrets.DB_DATABASE}}\" >> /opt/.env
+          echo \"DB_PORT=${{secrets.DB_PORT}}\" >> /opt/.env
+          echo \"project_id=${{ secrets.PROJECT_ID}}\" >> /opt/.env " \
+        --service-account=${{secrets.EMAIL}} \
+        --scopes="cloud-platform" \
+        --create-disk=auto-delete=yes,boot=yes,device-name=Disk1,image="projects/devproject-414823/global/images/${{steps.get_Image.outputs.IMAGE}}",kms-key=${{steps.get_instance_key.outputs.instance_key}},mode=rw,size=100,type=pd-balanced \
+        --tags=http-server
+
+    - name: Get Template
+      id: get_template
+      run: |
+        tempName=$(gcloud compute instance-templates list --project=devproject-414823 --sort-by="~creationTimestamp" --limit=1 --format="value(name)")
+        echo "::set-output name=tempName::$tempName"
+        echo "tempName: $tempName"
+
+
+    - name: Configure Instance Groups
+      run: |
+        gcloud compute instance-groups managed rolling-action start-update ${{steps.get_groupmanager.outputs.groupmanager}} \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/devproject-414902/regions/us-east1/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
+          --max-unavailable=3 \
+          --region=${{secrets.REGION}}
+
+    - name: Monitoring the instances
+      run: |
+        gcloud compute instance-groups managed wait-until ${{steps.get_groupmanager.outputs.groupmanager}} \
+          --version-target-reached \
+          --region=${{secrets.REGION}}
