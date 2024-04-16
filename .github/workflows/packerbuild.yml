@@ -69,7 +69,7 @@ jobs:
     - name: Get Latest Image from GCP Console
       id: get_Image
       run: |
-        IMAGE=$(gcloud compute images list --project devproject-414902 --filter='name:centos-stream-8-custom-*' --sort-by=~creationTimestamp --limit=1 --format='value(name)')
+        IMAGE=$(gcloud compute images list --project devproject-414823 --filter='name:centos-stream-8-custom-*' --sort-by=~creationTimestamp --limit=1 --format='value(name)')
         echo "::set-output name=IMAGE::$IMAGE"
         echo "IMAGE: $IMAGE"
 
@@ -130,7 +130,7 @@ jobs:
     - name: Configure Instance Groups
       run: |
         gcloud compute instance-groups managed rolling-action start-update ${{steps.get_groupmanager.outputs.groupmanager}} \
-          --version=template=https://compute.googleapis.com/compute/v1/projects/devproject-414902/regions/us-east1/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/devproject-414823/regions/us-east4/instanceTemplates/${{ steps.get_template.outputs.tempName }} \
           --max-unavailable=3 \
           --region=${{secrets.REGION}}
 
