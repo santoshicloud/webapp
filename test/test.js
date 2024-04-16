@@ -78,7 +78,7 @@ describe('User API Integration Tests', () => {
         lastName: 'User'
     };
 
-    // Test 1: Create an account and validate account creation
+    // Test 1: Create an account and validate account creations
     it('should create an account and validate account creation', async () => {
         // Create user
         const createResponse = await request(app)
