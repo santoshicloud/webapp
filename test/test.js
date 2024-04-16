@@ -82,7 +82,7 @@ describe('User API Integration Tests', () => {
     it('should create an account and validate account creation', async () => {
         // Create user
         const createResponse = await request(app)
-            .post('/v1/user')
+            .post('/v2/user')
             .send(userCredentials);
         expect(createResponse.statusCode).toBe(201);
         expect(createResponse.body).toHaveProperty('id');
@@ -90,7 +90,7 @@ describe('User API Integration Tests', () => {
 
         // Validate account creation
         const validateResponse = await request(app)
-            .get('/v1/user/self')
+            .get('/v2/user/self')
             .auth(userCredentials.email, userCredentials.password); // Basic Auth
         expect(validateResponse.statusCode).toBe(200);
         expect(validateResponse.body.id).toBe(createdUserId);
@@ -99,20 +99,20 @@ describe('User API Integration Tests', () => {
     // Test 2: Update the account and validate the account was updated
     it('should update the account and validate the account was updated', async () => {
         const updatedUser = {
-          firstName: 'donga', // Change this value,
+          firstName: 'dongaa', // Change this value,
             lastName: userCredentials.lastName // Keep original value
         };
 
         // Update user
         const updateResponse = await request(app)
-            .put('/v1/user/self')
+            .put('/v2/user/self')
             .auth(userCredentials.email, userCredentials.password) // Basic Auth
             .send(updatedUser);
         expect(updateResponse.statusCode).toBe(204);
 
         // Validate account update
         const validateUpdateResponse = await request(app)
-            .get('/v1/user/self')
+            .get('/v2/user/self')
             .auth(userCredentials.email, userCredentials.password); // Basic Auth
         expect(validateUpdateResponse.statusCode).toBe(200);
         expect(validateUpdateResponse.body.firstName).toBe(updatedUser.firstName);

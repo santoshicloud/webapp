@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use(express.json()); // Using to parse JSON body
-app.use('/v1/user', userRoutes);
+app.use('/v2/user', userRoutes);
 
 // Bootstrap the database
 async function bootstrapDatabase() {
