@@ -7,13 +7,12 @@ env:
   databaseName: ${{ secrets.DATABASE }}
 
 on:
-  pull_request:
-    types: [closed]
+  push:
+    branches: ["main"]
 
 
 jobs:
-  build:
-    if: github.event.pull_request.merged == false
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
