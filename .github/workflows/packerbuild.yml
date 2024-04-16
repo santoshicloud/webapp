@@ -106,7 +106,7 @@ jobs:
         --instance-template-region=${{ secrets.REGION }}  \
         --project=${{secrets.PROJECT_ID}} \
         --machine-type=${{secrets.MACHINE_TYPE}} \
-        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v1/projects/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
+        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=https://www.googleapis.com/compute/v1/projects/devproject-414823/regions/us-east4/subnetworks/webapp \
         --metadata=startup-script="#!/bin/bash
           echo \"DB_HOST=${{secrets.HOST_IP}}\" > /opt/.env
           echo \"DB_USER=${{secrets.DB_USER}}\" >> /opt/.env
