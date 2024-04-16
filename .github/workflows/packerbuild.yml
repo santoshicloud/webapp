@@ -7,12 +7,13 @@ env:
   databaseName: ${{ secrets.DATABASE }}
 
 on:
-  push:
-    branches: ["main"]
+  pull_request:
+    types: [closed]
 
 
 jobs:
-  packer_build:
+  build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -69,7 +70,7 @@ jobs:
     - name: Get Latest Image from GCP Console
       id: get_Image
       run: |
-        IMAGE=$(gcloud compute images list --project devproject-414823 --filter='name:centos-stream-8-custom-*' --sort-by=~creationTimestamp --limit=1 --format='value(name)')
+        IMAGE=$(gcloud compute images list --project devproject-414823 --filter='name:centos-stream-8-*' --sort-by=~creationTimestamp --limit=1 --format='value(name)')
         echo "::set-output name=IMAGE::$IMAGE"
         echo "IMAGE: $IMAGE"
 
