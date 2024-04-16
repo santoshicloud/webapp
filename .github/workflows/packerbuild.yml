@@ -96,7 +96,7 @@ jobs:
     - name: Get instance key
       id: get_instance_key
       run: |
-       instance_key=$(gcloud kms keys list --location=${{ secrets.REGION }} --keyring=${{ steps.get_latestck.outputs.latestck }} --project=${{ secrets.PROJECT_ID }} --filter=name:vm-machine-key --format="value(name)")
+       instance_key=$(gcloud kms keys list --location=${{ secrets.REGION }} --keyring=${{ steps.get_latestck.outputs.latestck }} --project=devproject-414823 --filter=name:vm-machine-key --format="value(name)")
        echo "::set-output name=instance_key::$instance_key"
        echo "instance_key=$instance_key"
 
